@@ -372,3 +372,18 @@ async function iniciar() {
 }
 
 iniciar();
+const abaMovimentacoes = document.getElementById("aba-movimentacoes");
+const abaDividas = document.getElementById("aba-dividas");
+
+const painelMovimentacoes = document.getElementById("painel-movimentacoes");
+const painelDividas = document.getElementById("painel-dividas");
+
+abaMovimentacoes?.addEventListener("click", () => {
+  painelMovimentacoes.hidden = false;
+  painelDividas.hidden = true;
+});
+
+abaDividas?.addEventListener("click", () => {
+  painelMovimentacoes.hidden = true;
+  painelDividas.hidden = false;
+});
