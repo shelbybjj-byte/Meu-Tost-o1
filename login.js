@@ -1,102 +1,86 @@
 
 "use strict";
 
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = "https://bhbboegwmnqejkixbvqb.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "COLE_SUA_CHAVE_PUBLICA_AQUI";
+
+const supabase = createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
 const formLogin = document.getElementById("form-login");
 const formCadastro = document.getElementById("form-cadastro");
 
 const avisoLogin = document.getElementById("aviso-login");
 const avisoCadastro = document.getElementById("aviso-cadastro");
 
-const chaveUsuarios = "usuarios";
-const chaveSessao = "usuarioLogado";
-
-// Recuperar os usuários salvos
-function pegarUsuarios() {
-  try {
-    const dados = localStorage.getItem(chaveUsuarios);
-
-    if (!dados) {
-      return [];
-    }
-
-    const usuarios = JSON.parse(dados);
-
-    return Array.isArray(usuarios) ? usuarios : [];
-  } catch (erro) {
-    console.error("Erro ao recuperar usuários:", erro);
-    return [];
-  }
-}
-
-// Salvar usuários
-function salvarUsuarios(usuarios) {
-  try {
-    localStorage.setItem(chaveUsuarios, JSON.stringify(usuarios));
-    return true;
-  } catch (erro) {
-    console.error("Erro ao salvar usuários:", erro);
-    return false;
-  }
-}
-
-// Alternar entre login e cadastro
 function mostrarTela(tela) {
   formLogin.classList.add("escondido");
   formCadastro.classList.add("escondido");
-
   tela.classList.remove("escondido");
 }
 
-// Exibir mensagens
 function mostrarAviso(elemento, mensagem, sucesso = false) {
   elemento.textContent = mensagem;
   elemento.classList.toggle("ok", sucesso);
 }
 
-// Entrar no sistema
-function entrar(usuario) {
-  try {
-    localStorage.setItem(chaveSessao, usuario.email);
-    window.location.href = "gastos.html";
-  } catch (erro) {
-    console.error("Erro ao iniciar sessão:", erro);
+function traduzirErro(erro) {
+  const mensagem = (erro?.message || "").toLowerCase();
 
-    mostrarAviso(
-      avisoLogin,
-      "Não foi possível iniciar a sessão neste navegador."
-    );
+  if (mensagem.includes("invalid login credentials")) {
+    return "E-mail ou senha incorretos.";
   }
+
+  if (
+    mensagem.includes("user already registered") ||
+    mensagem.includes("already been registered")
+  ) {
+    return "Este e-mail já está cadastrado.";
+  }
+
+  if (mensagem.includes("password should be at least")) {
+    return "A senha precisa ter pelo menos 6 caracteres.";
+  }
+
+  if (mensagem.includes("email not confirmed")) {
+    return "Confirme seu e-mail antes de entrar.";
+  }
+
+  if (mensagem.includes("rate limit")) {
+    return "Muitas tentativas. Aguarde um pouco e tente novamente.";
+  }
+
+  console.error("Erro do Supabase:", erro);
+  return "Não foi possível concluir a operação. Verifique os dados e tente novamente.";
 }
 
-// Ir para cadastro
-
-document.getElementById("ir-cadastro").addEventListener("click", function (e) {
+// Alternar para cadastro
+document.getElementById("ir-cadastro").addEventListener("click", (e) => {
   e.preventDefault();
-
-  document.getElementById("aviso-login").textContent = "";
-  document.getElementById("form-login").classList.add("escondido");
-  document.getElementById("form-cadastro").classList.remove("escondido");
-});
-
-
-// Voltar para login
-document.getElementById("ir-login").addEventListener("click", function (e) {
-  e.preventDefault();
-
   mostrarAviso(avisoLogin, "");
   mostrarAviso(avisoCadastro, "");
+  mostrarTela(formCadastro);
+});
 
-  formLogin.reset();
+// Voltar para login
+document.getElementById("ir-login").addEventListener("click", (e) => {
+  e.preventDefault();
+  mostrarAviso(avisoLogin, "");
+  mostrarAviso(avisoCadastro, "");
   mostrarTela(formLogin);
 });
 
-// Cadastrar usuário
-formCadastro.addEventListener("submit", function (e) {
+// Criar conta
+formCadastro.addEventListener("submit", async (e) => {
   e.preventDefault();
 
+  const botao = formCadastro.querySelector('button[type="submit"]');
   const nome = document.getElementById("cad-nome").value.trim();
-  const email = document.getElementById("cad-email")
-    .value.trim().toLowerCase();
+  const email = document.getElementById("cad-email").value.trim().toLowerCase();
   const senha = document.getElementById("cad-senha").value;
 
   mostrarAviso(avisoCadastro, "");
@@ -109,82 +93,86 @@ formCadastro.addEventListener("submit", function (e) {
     return;
   }
 
-  const usuarios = pegarUsuarios();
+  botao.disabled = true;
+  botao.textContent = "Cadastrando...";
 
-  const emailExiste = usuarios.some(function (usuario) {
-    return usuario.email.toLowerCase() === email;
-  });
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password: senha,
+      options: {
+        data: { nome },
+        emailRedirectTo: window.location.origin + "/index.html"
+      }
+    });
 
-  if (emailExiste) {
-    mostrarAviso(avisoCadastro, "Este e-mail já está cadastrado.");
-    return;
-  }
+    if (error) throw error;
 
-  usuarios.push({
-    nome: nome,
-    email: email,
-    senha: senha
-  });
+    formCadastro.reset();
 
-  if (!salvarUsuarios(usuarios)) {
+    if (data.session) {
+      window.location.replace("gastos.html");
+      return;
+    }
+
+    document.getElementById("login-email").value = email;
+    mostrarTela(formLogin);
+
     mostrarAviso(
-      avisoCadastro,
-      "Não foi possível salvar a conta. Verifique o navegador."
+      avisoLogin,
+      "Cadastro iniciado! Verifique seu e-mail para confirmar a conta antes de entrar.",
+      true
     );
-    return;
+  } catch (erro) {
+    mostrarAviso(avisoCadastro, traduzirErro(erro));
+  } finally {
+    botao.disabled = false;
+    botao.textContent = "Cadastrar";
   }
-
-  formCadastro.reset();
-
-  document.getElementById("login-email").value = email;
-
-  mostrarTela(formLogin);
-
-  mostrarAviso(
-    avisoLogin,
-    "Conta criada com sucesso! Agora entre com sua senha.",
-    true
-  );
 });
 
-// Fazer login
-formLogin.addEventListener("submit", function (e) {
+// Entrar
+formLogin.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const email = document.getElementById("login-email")
-    .value.trim().toLowerCase();
+  const botao = formLogin.querySelector('button[type="submit"]');
+  const email = document.getElementById("login-email").value.trim().toLowerCase();
   const senha = document.getElementById("login-senha").value;
 
   mostrarAviso(avisoLogin, "");
 
-  const usuario = pegarUsuarios().find(function (u) {
-    return u.email.toLowerCase() === email && u.senha === senha;
-  });
+  botao.disabled = true;
+  botao.textContent = "Entrando...";
 
-  if (!usuario) {
-    mostrarAviso(avisoLogin, "E-mail ou senha incorretos.");
-    return;
+  try {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password: senha
+    });
+
+    if (error) throw error;
+
+    window.location.replace("gastos.html");
+  } catch (erro) {
+    mostrarAviso(avisoLogin, traduzirErro(erro));
+  } finally {
+    botao.disabled = false;
+    botao.textContent = "Entrar";
   }
-
-  entrar(usuario);
 });
 
-// Recuperar sessão existente
-function verificarSessao() {
-  const emailLogado = localStorage.getItem(chaveSessao);
+// Se já houver sessão válida, abrir a página principal
+async function verificarSessao() {
+  try {
+    const { data, error } = await supabase.auth.getSession();
 
-  if (!emailLogado) {
-    return;
-  }
+    if (error) throw error;
 
-  const usuario = pegarUsuarios().find(function (u) {
-    return u.email === emailLogado;
-  });
-
-  if (usuario) {
-    window.location.replace("gastos.html");
-  } else {
-    localStorage.removeItem(chaveSessao);
+    if (data.session) {
+      window.location.replace("gastos.html");
+    }
+  } catch (erro) {
+    console.error("Não foi possível verificar a sessão:", erro);
   }
 }
 
