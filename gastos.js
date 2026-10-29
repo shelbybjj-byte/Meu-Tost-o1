@@ -372,18 +372,26 @@ async function iniciar() {
 }
 
 iniciar();
+// 1. Selecionar os elementos
 const abaMovimentacoes = document.getElementById("aba-movimentacoes");
 const abaDividas = document.getElementById("aba-dividas");
 
 const painelMovimentacoes = document.getElementById("painel-movimentacoes");
 const painelDividas = document.getElementById("painel-dividas");
 
+// 2. Controlar os cliques
 abaMovimentacoes?.addEventListener("click", () => {
   painelMovimentacoes.hidden = false;
   painelDividas.hidden = true;
+
+  abaMovimentacoes.classList.add("ativa");
+  abaDividas.classList.remove("ativa");
 });
 
 abaDividas?.addEventListener("click", () => {
   painelMovimentacoes.hidden = true;
   painelDividas.hidden = false;
+
+  abaDividas.classList.add("ativa");
+  abaMovimentacoes.classList.remove("ativa");
 });
