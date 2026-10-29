@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Tostão - Entrar</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="login.js" defer></script>
+</head>
+<body>
+  <main class="caixa">
+    <div class="marca">
+      <span class="moeda">💰</span>
+      <span class="marca-nome">Meu Tostão</span>
+      <small>Seu dinheiro, sob controle</small>
+    </div>
+
+    <!-- LOGIN -->
+    <form id="form-login">
+      <h1>Entrar</h1>
+
+      <label for="login-email">E-mail</label>
+      <input
+        type="email"
+        id="login-email"
+        placeholder="Seu e-mail"
+        autocomplete="email"
+        required
+      >
+
+      <label for="login-senha">Senha</label>
+      <input
+        type="password"
+        id="login-senha"
+        placeholder="Sua senha"
+        autocomplete="current-password"
+        required
+      >
+
+      <button type="submit">Entrar</button>
+
+      <p class="aviso" id="aviso-login" role="status" aria-live="polite"></p>
+
+      <p class="troca">
+        Não tem conta?
+        <a href="#" id="ir-cadastro">Cadastre-se</a>
+      </p>
+    </form>
+
+    <!-- CADASTRO -->
+    <form id="form-cadastro" class="escondido">
+      <h1>Criar conta</h1>
+
+      <label for="cad-nome">Nome</label>
+      <input
+        type="text"
+        id="cad-nome"
+        placeholder="Seu nome"
+        autocomplete="name"
+        required
+      >
+
+      <label for="cad-email">E-mail</label>
+      <input
+        type="email"
+        id="cad-email"
+        placeholder="Seu e-mail"
+        autocomplete="email"
+        required
+      >
+
+      <label for="cad-senha">Senha</label>
+      <input
+        type="password"
+        id="cad-senha"
+        placeholder="Mínimo de 6 caracteres"
+        minlength="6"
+        autocomplete="new-password"
+        required
+      >
+
+      <button type="submit">Cadastrar</button>
+
+      <p class="aviso" id="aviso-cadastro" role="status" aria-live="polite"></p>
+
+      <p class="troca">
+        Já tem conta?
+        <a href="#" id="ir-login">Entrar</a>
+      </p>
+    </form>
+  </main>
+
+<script>
+document.addEventListener("contextmenu", function (e) {
+  e.preventDefault();
+});
+
+document.addEventListener("keydown", function (e) {
+  if (
+    e.key === "F12" ||
+    (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key.toUpperCase())) ||
+    (e.ctrlKey && e.key.toUpperCase() === "U")
+  ) {
+    e.preventDefault();
+  }
+});
+</script>
+
+</body>
+</html>

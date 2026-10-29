@@ -1,0 +1,1212 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Tostão - Controle Financeiro</title>
+
+  <style>
+          
+/* Abas de navegação */
+.abas {
+  display: flex;
+  gap: 10px;
+  margin: 25px 0;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 12px;
+}
+
+.btn-aba {
+  border: none;
+  border-radius: 8px;
+  padding: 12px 18px;
+  background: #e5e7eb;
+  color: #374151;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-aba.ativa {
+  background: #4f46e5;
+  color: white;
+}
+
+.resumo-dividas {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.status-divida {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.status-pendente {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-paga {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.btn-pagar {
+  border: none;
+  background: #dcfce7;
+  color: #166534;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.btn-pagar:hover {
+  background: #bbf7d0;
+}
+
+.acoes-divida {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+@media (max-width: 700px) {
+  .resumo-dividas {
+    grid-template-columns: 1fr;
+  }
+
+  .abas {
+    flex-wrap: wrap;
+  }
+}
+
+  * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #f3f4f6;
+      color: #1f2937;
+    }
+
+    header {
+      background: linear-gradient(135deg, #4f46e5, #9333ea);
+      color: white;
+      padding: 22px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      font-size: 25px;
+      font-weight: bold;
+    }
+
+    .subtitulo {
+      margin-top: 5px;
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .usuario {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn-sair {
+      padding: 10px 15px;
+      border: 1px solid white;
+      border-radius: 8px;
+      color: white;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .btn-sair:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    main {
+      width: min(1100px, 92%);
+      margin: 30px auto;
+    }
+
+    .boas-vindas {
+      margin-bottom: 24px;
+    }
+
+    .boas-vindas h1 {
+      font-size: 27px;
+      margin-bottom: 8px;
+    }
+
+    .boas-vindas p {
+      color: #6b7280;
+    }
+
+    .resumos {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .cartao {
+      background: white;
+      padding: 23px;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+      border: 1px solid #e5e7eb;
+      min-width: 0;
+    }
+
+    .cartao p {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .valor {
+      font-size: clamp(18px, 2.5vw, 28px);
+      font-weight: bold;
+      overflow-wrap: anywhere;
+    }
+
+    .saldo {
+      color: #4f46e5;
+    }
+
+    .positivo {
+      color: #16a34a;
+    }
+
+    .negativo {
+      color: #dc2626;
+    }
+
+    .secao {
+      background: white;
+      padding: 25px;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+      border: 1px solid #e5e7eb;
+      margin-bottom: 25px;
+    }
+
+    .secao h2 {
+      font-size: 21px;
+      margin-bottom: 20px;
+    }
+
+    .formulario {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 17px;
+    }
+
+    .campo {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .campo-completo {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 15px;
+      background: white;
+      color: #1f2937;
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid #a5b4fc;
+      border-color: #4f46e5;
+    }
+
+    .btn-principal {
+      border: none;
+      border-radius: 8px;
+      background: #4f46e5;
+      color: white;
+      padding: 13px 18px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-principal:hover {
+      background: #4338ca;
+    }
+
+    .mensagem {
+      grid-column: 1 / -1;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .mensagem.erro {
+      color: #dc2626;
+    }
+
+    .mensagem.sucesso {
+      color: #15803d;
+    }
+
+    .historico-topo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .historico-topo h2 {
+      margin-bottom: 0;
+    }
+
+    .filtro {
+      width: auto;
+      min-width: 155px;
+    }
+
+    .tabela-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th, td {
+      padding: 15px 12px;
+      border-bottom: 1px solid #e5e7eb;
+      white-space: nowrap;
+    }
+
+    th {
+      font-size: 12px;
+      color: #6b7280;
+      text-transform: uppercase;
+    }
+
+    td {
+      font-size: 14px;
+    }
+
+    .tipo {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .tipo.receita {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .tipo.despesa {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .btn-excluir {
+      border: none;
+      background: #fee2e2;
+      color: #b91c1c;
+      padding: 8px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn-excluir:hover {
+      background: #fecaca;
+    }
+
+    .vazio {
+      text-align: center;
+      color: #6b7280;
+      padding: 30px 10px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    @media (max-width: 700px) {
+      header {
+        padding: 20px 4%;
+      }
+
+      main {
+        width: 94%;
+        margin: 22px auto;
+      }
+
+      .resumos {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .cartao {
+        padding: 19px;
+      }
+
+      .secao {
+        padding: 18px;
+      }
+
+      .formulario {
+        grid-template-columns: 1fr;
+      }
+
+      .campo-completo {
+        grid-column: auto;
+      }
+
+      .boas-vindas h1 {
+        font-size: 23px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div>
+      <div class="logo">🪙 Meu Tostão</div>
+      <div class="subtitulo">Seu dinheiro, sob controle</div>
+    </div>
+
+    <div class="usuario">
+      <span id="nome-usuario">Minha conta</span>
+      <button type="button" class="btn-sair" id="btn-sair">
+        Sair
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="boas-vindas">
+      <h1>Meu controle financeiro</h1>
+      <p>Acompanhe suas receitas, despesas e seu saldo.</p>
+    </section>
+    
+<nav class="abas" aria-label="Navegação financeira">
+  <button type="button" class="btn-aba ativa" id="aba-movimentacoes">
+    Movimentações
+  </button>
+
+  <button type="button" class="btn-aba" id="aba-dividas">
+    Dívidas
+  </button>
+</nav>
+
+<div id="painel-movimentacoes">
+    <!-- RESUMO FINANCEIRO -->
+    <section class="resumos">
+      <article class="cartao">
+        <p>Saldo atual</p>
+        <div class="valor saldo" id="saldo">R$ 0,00</div>
+      </article>
+
+      <article class="cartao">
+        <p>Total de receitas</p>
+        <div class="valor positivo" id="total-receitas">R$ 0,00</div>
+      </article>
+
+      <article class="cartao">
+        <p>Total de despesas</p>
+        <div class="valor negativo" id="total-despesas">R$ 0,00</div>
+      </article>
+    </section>
+
+    <!-- NOVA MOVIMENTAÇÃO -->
+    <section class="secao">
+      <h2>Adicionar movimentação</h2>
+
+      <form id="form-movimentacao" class="formulario">
+        <div class="campo">
+          <label for="descricao">Descrição</label>
+          <input
+            type="text"
+            id="descricao"
+            placeholder="Ex.: Salário, mercado..."
+            maxlength="100"
+            required
+          >
+        </div>
+
+        <div class="campo">
+          <label for="valor">Valor (R$)</label>
+          <input
+            type="number"
+            id="valor"
+            placeholder="0,00"
+            min="0.01"
+            max="1000000000"
+            step="0.01"
+            required
+          >
+        </div>
+
+        <div class="campo">
+          <label for="tipo">Tipo</label>
+          <select id="tipo" required>
+            <option value="receita">Receita (dinheiro que entra)</option>
+            <option value="despesa">Despesa (dinheiro que sai)</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="categoria">Categoria</label>
+          <select id="categoria" required>
+            <option value="Salário">Salário</option>
+            <option value="Alimentação">Alimentação</option>
+            <option value="Transporte">Transporte</option>
+            <option value="Moradia">Moradia</option>
+            <option value="Estudos">Estudos</option>
+            <option value="Lazer">Lazer</option>
+            <option value="Saúde">Saúde</option>
+            <option value="Investimentos">Investimentos</option>
+            <option value="Outros">Outros</option>
+          </select>
+        </div>
+
+        <div class="campo campo-completo">
+          <label for="data">Data da movimentação</label>
+          <input type="date" id="data" required>
+        </div>
+
+        <button type="submit" class="btn-principal campo-completo">
+          Adicionar movimentação
+        </button>
+
+        <p id="mensagem" class="mensagem campo-completo"
+           role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- HISTÓRICO -->
+    <section class="secao">
+      <div class="historico-topo">
+        <h2>Histórico de movimentações</h2>
+
+        <select id="filtro" class="filtro" aria-label="Filtrar movimentações">
+          <option value="todas">Todas</option>
+          <option value="receita">Somente receitas</option>
+          <option value="despesa">Somente despesas</option>
+        </select>
+  </div>        
+      </div>
+
+      <div class="tabela-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Descrição</th>
+              <th>Categoria</th>
+              <th>Data</th>
+              <th>Tipo</th>
+              <th>Valor</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+
+          <tbody id="lista-movimentacoes"></tbody>
+        </table>
+
+        <p id="historico-vazio" class="vazio">
+          Nenhuma movimentação cadastrada.
+        </p>
+      </div>
+    </section>
+
+<!-- ABA DE DÍVIDAS -->
+<section class="secao" id="painel-dividas" hidden>
+  <h2>Cadastrar uma dívida</h2>
+
+  <form id="form-divida" class="formulario">
+    <div class="campo">
+      <label for="divida-descricao">Nome da dívida</label>
+      <input
+        type="text"
+        id="divida-descricao"
+        maxlength="100"
+        placeholder="Ex.: Conta de luz, cartão..."
+        required
+      >
+    </div>
+
+    <div class="campo">
+      <label for="divida-valor">Valor (R$)</label>
+      <input
+        type="number"
+        id="divida-valor"
+        min="0.01"
+        max="1000000000"
+        step="0.01"
+        placeholder="0,00"
+        required
+      >
+    </div>
+
+    <div class="campo campo-completo">
+      <label for="divida-vencimento">Data de vencimento</label>
+      <input type="date" id="divida-vencimento" required>
+    </div>
+
+    <button type="submit" class="btn-principal campo-completo">
+      Cadastrar dívida
+    </button>
+
+    <p id="mensagem-divida" class="mensagem campo-completo"
+       role="status" aria-live="polite"></p>
+  </form>
+
+  <h2 style="margin-top: 30px;">Resumo das dívidas</h2>
+
+  <div class="resumo-dividas">
+    <article class="cartao">
+      <p>Total pendente</p>
+      <div class="valor negativo" id="total-pendente">R$ 0,00</div>
+    </article>
+
+    <article class="cartao">
+      <p>Total pago</p>
+      <div class="valor positivo" id="total-pago">R$ 0,00</div>
+    </article>
+
+    <article class="cartao">
+      <p>Contas pendentes</p>
+      <div class="valor saldo" id="quantidade-pendente">0</div>
+    </article>
+  </div>
+
+  <div class="historico-topo">
+    <h2>Minhas dívidas</h2>
+
+    <select id="filtro-dividas" class="filtro"
+            aria-label="Filtrar dívidas">
+      <option value="todas">Todas</option>
+      <option value="pendente">Pendentes</option>
+      <option value="paga">Pagas</option>
+    </select>
+  </div>
+
+  <div class="tabela-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Dívida</th>
+          <th>Vencimento</th>
+          <th>Valor</th>
+          <th>Status</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+
+      <tbody id="lista-dividas"></tbody>
+    </table>
+
+    <p id="dividas-vazias" class="vazio">
+      Nenhuma dívida cadastrada.
+    </p>
+  </div>
+</section>
+
+  </main>
+
+  <footer>
+    Meu Tostão — Organize seu dinheiro e acompanhe seus resultados.
+  </footer>
+
+  <script>
+    "use strict";
+
+    const CHAVE_SESSAO = "usuarioLogado";
+    const emailLogado = localStorage.getItem(CHAVE_SESSAO);
+
+    // Impede o acesso à página sem uma sessão válida.
+    let usuarios = [];
+
+    try {
+      usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    } catch (erro) {
+      usuarios = [];
+    }
+
+    const usuario = Array.isArray(usuarios)
+      ? usuarios.find(u => u.email === emailLogado)
+      : null;
+
+    if (!usuario) {
+      localStorage.removeItem(CHAVE_SESSAO);
+      window.location.replace("index.html");
+      throw new Error("É necessário entrar na conta primeiro.");
+    }
+
+    document.getElementById("nome-usuario").textContent =
+      usuario.nome || usuario.email;
+
+    // Os dados são separados por conta.
+    const chaveMovimentacoes =
+      "movimentacoes_" + encodeURIComponent(usuario.email);
+
+    const form = document.getElementById("form-movimentacao");
+    const campoDescricao = document.getElementById("descricao");
+    const campoValor = document.getElementById("valor");
+    const campoTipo = document.getElementById("tipo");
+    const campoCategoria = document.getElementById("categoria");
+    const campoData = document.getElementById("data");
+    const campoFiltro = document.getElementById("filtro");
+    const lista = document.getElementById("lista-movimentacoes");
+    const vazio = document.getElementById("historico-vazio");
+    const mensagem = document.getElementById("mensagem");
+
+"use strict";
+
+// Dados de dívidas separados por usuário.
+const chaveDividas =
+  "dividas_" + encodeURIComponent(usuario.email);
+
+const formDivida = document.getElementById("form-divida");
+const campoDescricaoDivida = document.getElementById("divida-descricao");
+const campoValorDivida = document.getElementById("divida-valor");
+const campoVencimentoDivida =
+  document.getElementById("divida-vencimento");
+const mensagemDivida = document.getElementById("mensagem-divida");
+const filtroDividas = document.getElementById("filtro-dividas");
+const listaDividas = document.getElementById("lista-dividas");
+const dividasVazias = document.getElementById("dividas-vazias");
+
+const painelMovimentacoes =
+  document.getElementById("painel-movimentacoes");
+const painelDividas = document.getElementById("painel-dividas");
+const abaMovimentacoes = document.getElementById("aba-movimentacoes");
+const abaDividas = document.getElementById("aba-dividas");
+
+let dividas = [];
+
+function carregarDividas() {
+  try {
+    const dados = JSON.parse(localStorage.getItem(chaveDividas));
+    dividas = Array.isArray(dados) ? dados : [];
+  } catch (erro) {
+    console.error("Erro ao carregar dívidas:", erro);
+    dividas = [];
+  }
+}
+
+function salvarDividas() {
+  try {
+    localStorage.setItem(chaveDividas, JSON.stringify(dividas));
+    return true;
+  } catch (erro) {
+    console.error("Erro ao salvar dívidas:", erro);
+    return false;
+  }
+}
+
+function mostrarMensagemDivida(texto, sucesso = false) {
+  mensagemDivida.textContent = texto;
+  mensagemDivida.className =
+    "mensagem campo-completo " + (sucesso ? "sucesso" : "erro");
+}
+
+function atualizarResumoDividas() {
+  const pendentes = dividas.filter(d => d.status === "pendente");
+  const pagas = dividas.filter(d => d.status === "paga");
+
+  const totalPendente = pendentes.reduce((soma, d) => soma + d.valor, 0);
+  const totalPago = pagas.reduce((soma, d) => soma + d.valor, 0);
+
+  document.getElementById("total-pendente").textContent =
+    formatarMoeda(totalPendente);
+
+  document.getElementById("total-pago").textContent =
+    formatarMoeda(totalPago);
+
+  document.getElementById("quantidade-pendente").textContent =
+    pendentes.length;
+}
+
+function renderizarDividas() {
+  listaDividas.replaceChildren();
+
+  const filtro = filtroDividas.value;
+
+  const filtradas = dividas
+    .filter(d => filtro === "todas" || d.status === filtro)
+    .slice()
+    .sort((a, b) => {
+      if (a.status !== b.status) {
+        return a.status === "pendente" ? -1 : 1;
+      }
+
+      return a.vencimento.localeCompare(b.vencimento);
+    });
+
+  dividasVazias.hidden = filtradas.length > 0;
+
+  filtradas.forEach(d => {
+    const linha = document.createElement("tr");
+
+    linha.appendChild(criarCelula(d.descricao));
+    linha.appendChild(criarCelula(formatarData(d.vencimento)));
+    linha.appendChild(criarCelula(formatarMoeda(d.valor)));
+
+    const celulaStatus = document.createElement("td");
+    const etiqueta = document.createElement("span");
+
+    etiqueta.className =
+      "status-divida " +
+      (d.status === "paga" ? "status-paga" : "status-pendente");
+
+    etiqueta.textContent = d.status === "paga" ? "Paga" : "Pendente";
+
+    celulaStatus.appendChild(etiqueta);
+    linha.appendChild(celulaStatus);
+
+    const celulaAcao = document.createElement("td");
+    const acoes = document.createElement("div");
+    acoes.className = "acoes-divida";
+
+    if (d.status === "pendente") {
+      const botaoPagar = document.createElement("button");
+      botaoPagar.type = "button";
+      botaoPagar.className = "btn-pagar";
+      botaoPagar.textContent = "Marcar como paga";
+
+      botaoPagar.addEventListener("click", () => marcarDividaComoPaga(d.id));
+      acoes.appendChild(botaoPagar);
+    }
+
+    const botaoExcluir = document.createElement("button");
+    botaoExcluir.type = "button";
+    botaoExcluir.className = "btn-excluir";
+    botaoExcluir.textContent = "Excluir";
+
+    botaoExcluir.addEventListener("click", () => excluirDivida(d.id));
+
+    acoes.appendChild(botaoExcluir);
+    celulaAcao.appendChild(acoes);
+    linha.appendChild(celulaAcao);
+
+    listaDividas.appendChild(linha);
+  });
+}
+
+function atualizarTelaDividas() {
+  atualizarResumoDividas();
+  renderizarDividas();
+}
+
+function marcarDividaComoPaga(id) {
+  const divida = dividas.find(d => d.id === id);
+
+  if (!divida || divida.status !== "pendente") {
+    return;
+  }
+
+  if (!window.confirm("Confirma que esta dívida já foi paga?")) {
+    return;
+  }
+
+  divida.status = "paga";
+  divida.dataPagamento = dataLocalHoje();
+
+  if (!salvarDividas()) {
+    divida.status = "pendente";
+    delete divida.dataPagamento;
+
+    window.alert("Não foi possível salvar a alteração.");
+    return;
+  }
+
+  atualizarTelaDividas();
+  mostrarMensagemDivida("Dívida marcada como paga.", true);
+}
+
+function excluirDivida(id) {
+  if (!window.confirm("Deseja realmente excluir esta dívida?")) {
+    return;
+  }
+
+  const anterior = dividas;
+  dividas = dividas.filter(d => d.id !== id);
+
+  if (!salvarDividas()) {
+    dividas = anterior;
+    window.alert("Não foi possível excluir a dívida.");
+    return;
+  }
+
+  atualizarTelaDividas();
+  mostrarMensagemDivida("Dívida excluída.", true);
+}
+
+formDivida.addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const descricao = campoDescricaoDivida.value.trim();
+  const valor = Number(campoValorDivida.value);
+  const vencimento = campoVencimentoDivida.value;
+
+  if (!descricao || descricao.length > 100) {
+    mostrarMensagemDivida("Informe um nome válido para a dívida.");
+    return;
+  }
+
+  if (!Number.isFinite(valor) || valor <= 0 || valor > 1000000000) {
+    mostrarMensagemDivida("Informe um valor válido.");
+    return;
+  }
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(vencimento)) {
+    mostrarMensagemDivida("Informe uma data de vencimento válida.");
+    return;
+  }
+
+  const divida = {
+    id: Date.now() + Math.random(),
+    descricao,
+    valor: Math.round(valor * 100) / 100,
+    vencimento,
+    status: "pendente",
+    dataPagamento: null
+  };
+
+  dividas.push(divida);
+
+  if (!salvarDividas()) {
+    dividas.pop();
+    mostrarMensagemDivida("Não foi possível salvar a dívida.");
+    return;
+  }
+
+  formDivida.reset();
+  atualizarTelaDividas();
+  mostrarMensagemDivida("Dívida cadastrada com sucesso!", true);
+});
+
+filtroDividas.addEventListener("change", renderizarDividas);
+
+// Alternar entre as abas.
+abaMovimentacoes.addEventListener("click", function () {
+  painelMovimentacoes.hidden = false;
+  painelDividas.hidden = true;
+
+  abaMovimentacoes.classList.add("ativa");
+  abaDividas.classList.remove("ativa");
+});
+
+abaDividas.addEventListener("click", function () {
+  painelMovimentacoes.hidden = true;
+  painelDividas.hidden = false;
+
+  abaDividas.classList.add("ativa");
+  abaMovimentacoes.classList.remove("ativa");
+});
+
+// Carregar as dívidas ao abrir a página.
+carregarDividas();
+atualizarTelaDividas();
+
+    let movimentacoes = [];
+
+    function dataLocalHoje() {
+      const agora = new Date();
+      const ano = agora.getFullYear();
+      const mes = String(agora.getMonth() + 1).padStart(2, "0");
+      const dia = String(agora.getDate()).padStart(2, "0");
+
+      return `${ano}-${mes}-${dia}`;
+    }
+
+    campoData.value = dataLocalHoje();
+
+    function formatarMoeda(valor) {
+      return valor.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      });
+    }
+
+    function formatarData(data) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(data)) {
+        return data;
+      }
+
+      const [ano, mes, dia] = data.split("-");
+      return `${dia}/${mes}/${ano}`;
+    }
+
+    function salvarMovimentacoes() {
+      try {
+        localStorage.setItem(
+          chaveMovimentacoes,
+          JSON.stringify(movimentacoes)
+        );
+
+        return true;
+      } catch (erro) {
+        console.error("Erro ao salvar movimentações:", erro);
+        return false;
+      }
+    }
+
+    function carregarMovimentacoes() {
+      try {
+        const dados = JSON.parse(
+          localStorage.getItem(chaveMovimentacoes)
+        );
+
+        movimentacoes = Array.isArray(dados) ? dados : [];
+      } catch (erro) {
+        console.error("Erro ao carregar movimentações:", erro);
+        movimentacoes = [];
+      }
+    }
+
+    function mostrarMensagem(texto, sucesso = false) {
+      mensagem.textContent = texto;
+      mensagem.className =
+        "mensagem campo-completo " + (sucesso ? "sucesso" : "erro");
+    }
+
+    function atualizarResumo() {
+      const receitas = movimentacoes
+        .filter(m => m.tipo === "receita")
+        .reduce((soma, m) => soma + m.valor, 0);
+
+      const despesas = movimentacoes
+        .filter(m => m.tipo === "despesa")
+        .reduce((soma, m) => soma + m.valor, 0);
+
+      const saldo = receitas - despesas;
+
+      document.getElementById("saldo").textContent =
+        formatarMoeda(saldo);
+
+      document.getElementById("saldo").className =
+        "valor " + (saldo < 0 ? "negativo" : "saldo");
+
+      document.getElementById("total-receitas").textContent =
+        formatarMoeda(receitas);
+
+      document.getElementById("total-despesas").textContent =
+        formatarMoeda(despesas);
+    }
+
+    function criarCelula(texto) {
+      const td = document.createElement("td");
+      td.textContent = texto;
+      return td;
+    }
+
+    function renderizarHistorico() {
+      lista.replaceChildren();
+
+      const filtro = campoFiltro.value;
+
+      const filtradas = movimentacoes
+        .filter(m => filtro === "todas" || m.tipo === filtro)
+        .slice()
+        .sort((a, b) => {
+          const comparacao = b.data.localeCompare(a.data);
+          return comparacao || b.id - a.id;
+        });
+
+      vazio.hidden = filtradas.length > 0;
+
+      filtradas.forEach(m => {
+        const linha = document.createElement("tr");
+
+        linha.appendChild(criarCelula(m.descricao));
+        linha.appendChild(criarCelula(m.categoria));
+        linha.appendChild(criarCelula(formatarData(m.data)));
+
+        const celulaTipo = document.createElement("td");
+        const etiqueta = document.createElement("span");
+
+        etiqueta.className = "tipo " + m.tipo;
+        etiqueta.textContent =
+          m.tipo === "receita" ? "Receita" : "Despesa";
+
+        celulaTipo.appendChild(etiqueta);
+        linha.appendChild(celulaTipo);
+
+        const celulaValor = criarCelula(
+          (m.tipo === "receita" ? "+ " : "- ") +
+          formatarMoeda(m.valor)
+        );
+
+        celulaValor.classList.add(
+          m.tipo === "receita" ? "positivo" : "negativo"
+        );
+
+        linha.appendChild(celulaValor);
+
+        const celulaAcao = document.createElement("td");
+        const botao = document.createElement("button");
+
+        botao.type = "button";
+        botao.className = "btn-excluir";
+        botao.textContent = "Excluir";
+        botao.setAttribute(
+          "aria-label",
+          "Excluir movimentação: " + m.descricao
+        );
+
+        botao.addEventListener("click", function () {
+          excluirMovimentacao(m.id);
+        });
+
+        celulaAcao.appendChild(botao);
+        linha.appendChild(celulaAcao);
+
+        lista.appendChild(linha);
+      });
+    }
+
+    function atualizarTela() {
+      atualizarResumo();
+      renderizarHistorico();
+    }
+
+    function excluirMovimentacao(id) {
+      const confirmacao = window.confirm(
+        "Deseja realmente excluir esta movimentação?"
+      );
+
+      if (!confirmacao) {
+        return;
+      }
+
+      const anterior = movimentacoes;
+
+      movimentacoes = movimentacoes.filter(m => m.id !== id);
+
+      if (!salvarMovimentacoes()) {
+        movimentacoes = anterior;
+
+        window.alert(
+          "Não foi possível excluir. Verifique o armazenamento do navegador."
+        );
+
+        return;
+      }
+
+      atualizarTela();
+      mostrarMensagem("Movimentação excluída.", true);
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const descricao = campoDescricao.value.trim();
+      const valor = Number(campoValor.value);
+      const tipo = campoTipo.value;
+      const categoria = campoCategoria.value;
+      const data = campoData.value;
+
+      if (!descricao || descricao.length > 100) {
+        mostrarMensagem("Informe uma descrição válida.");
+        return;
+      }
+
+      if (!Number.isFinite(valor) || valor <= 0 ||
+          valor > 1000000000) {
+        mostrarMensagem("Informe um valor válido.");
+        return;
+      }
+
+      if (!["receita", "despesa"].includes(tipo)) {
+        mostrarMensagem("Selecione um tipo válido.");
+        return;
+      }
+
+      if (!data || data > dataLocalHoje()) {
+        mostrarMensagem("Informe uma data válida, até hoje.");
+        return;
+      }
+
+      const movimentacao = {
+        id: Date.now() + Math.random(),
+        descricao,
+        valor: Math.round(valor * 100) / 100,
+        tipo,
+        categoria,
+        data
+      };
+
+      movimentacoes.push(movimentacao);
+
+      if (!salvarMovimentacoes()) {
+        movimentacoes.pop();
+
+        mostrarMensagem(
+          "Não foi possível salvar. Verifique o espaço disponível no navegador."
+        );
+
+        return;
+      }
+
+      form.reset();
+      campoData.value = dataLocalHoje();
+      campoTipo.value = "receita";
+      campoCategoria.value = "Salário";
+
+      atualizarTela();
+
+      mostrarMensagem("Movimentação adicionada com sucesso!", true);
+    });
+
+    campoFiltro.addEventListener("change", renderizarHistorico);
+
+    document.getElementById("btn-sair").addEventListener("click", function () {
+      localStorage.removeItem(CHAVE_SESSAO);
+      window.location.replace("index.html");
+    });
+
+    carregarMovimentacoes();
+    atualizarTela();
+  </script>
+</body>
+</html>
